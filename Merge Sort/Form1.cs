@@ -4,21 +4,49 @@ namespace Merge_Sort
     {
         int size = 0;
         byte minSize = 10;
+        List<int> listToSort;
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void sortButton_Click(object sender, EventArgs e)
         {
+            if (size != 0)
+            {
+                MergeSort.Sort(listToSort, 0, listToSort.Count - 1);
+
+                FillSortedDataGridView();
+            }
+            else
+            {
+                warningLabel.Text = "Первая таблица не заполнена";
+            }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void FillSortedDataGridView()
+        {
+            sortedDataGridView.Rows.Clear();
+
+            while (sortedDataGridView.Rows.Count < unsortedDataGridView.Rows.Count)
+                sortedDataGridView.Rows.Add(1);
+
+            for (int i = 0; i < listToSort.Count; i++)
+            {
+                sortedDataGridView[0, i].Value = listToSort[i];
+            }
+        }
+
+        private void fillWithRandomButton_Click(object sender, EventArgs e)
         {
             if (size >= minSize)
             {
                 FillDataGridViewWithRandom();
+
+                listToSort.Clear();
+
+                listToSort = SetValuesForList();
             }
             else
             {
@@ -26,28 +54,38 @@ namespace Merge_Sort
             }
         }
 
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-
-        }
-
         private void FillDataGridViewWithRandom()
         {
             Random random = new();
 
-            if (size >= minSize)
-            {
-                unsortedDataGridView.Rows.Add(size - 1);
+            unsortedDataGridView.Rows.Clear();
 
-                for (int i = 0; i < size ; i++)
-                {
-                    unsortedDataGridView[0, i].Value = random.Next(1, 900);
-                }
+            while (unsortedDataGridView.Rows.Count < size)
+                unsortedDataGridView.Rows.Add(1);
+
+            for (int i = 0; i < size; i++)
+            {
+                unsortedDataGridView[0, i].Value = random.Next();
             }
+
+        }
+
+        private List<int> SetValuesForList()
+        {
+            List<int> tempList = new();
+            
+            for (int i = 0; i < unsortedDataGridView.Rows.Count; i++)
+            {
+                tempList.Insert(0, (int)unsortedDataGridView[0, i].Value);
+            }
+
+            return tempList;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            bool safe = true;
+
             warningLabel.Text = "";
 
             try
@@ -56,14 +94,14 @@ namespace Merge_Sort
             }
             catch (FormatException)
             {
+                safe = false;
                 warningLabel.Text = "Неверный формат данных";
             }
+
+            if (safe)
+            {
+                listToSort = new();
+            }
         }
-
-        /*====МУСОР====*/
-
-        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e) { }
-
-      
     }
 }
